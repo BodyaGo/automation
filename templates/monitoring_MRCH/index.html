@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excel Comparator</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+
+    <style>
+        body { font-family: 'Roboto', sans-serif; }
+    </style>
+</head>
+
+<body class="bg-gradient-to-br from-indigo-50 to-purple-100 flex flex-col min-h-screen">
+
+
+    <!-- Main Content -->
+    <div class="flex-grow flex items-center justify-center py-12">
+        <div class="bg-white rounded-lg shadow-xl p-10 max-w-lg w-full transform transition hover:shadow-2xl">
+            <h1 class="text-2xl font-bold text-center mb-6 text-gray-700">Upload Excel Files for Comparison</h1>
+            <form action="{{ url_for('monitoring_mrch.monitoring_MRCH') }}" method="POST" enctype="multipart/form-data" >
+                <div>
+                    <label class="block text-sm font-semibold text-gray-600 mb-2">Last Week's File</label>
+                    <input type="file" name="file1" required class="w-full border border-gray-200 rounded-lg py-2 px-4 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-300 transition duration-200">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-600 mb-2">This Week's File</label>
+                    <input type="file" name="file2" required class="w-full border border-gray-200 rounded-lg py-2 px-4 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-300 transition duration-200">
+                </div>
+                <button type="submit" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 rounded-lg shadow-lg transition duration-300 transform hover:scale-105">
+                    Compare Files
+                </button>
+            </form>            
+        </div>
+    </div>
+
+    
+    <!-- Footer -->
+    <footer class="bg-white shadow-inner text-gray-600 text-center py-6">
+        <div class="max-w-6xl mx-auto px-4">
+            <p class="font-medium">&copy; 2024 Excel Comparator | All Rights Reserved. Муха Богдан</p>
+            <p class="text-sm">Made with ❤️ in Ukraine</p>
+        </div>
+    </footer>
+
+
+
+</body>
+</html>

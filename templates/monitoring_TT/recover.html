@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparison Results</title>
+
+    <!-- Tailwind CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+    <!-- DataTables CSS and JS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.7.0/css/buttons.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.7.0/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/select/1.3.3/js/dataTables.select.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.7.0/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.7.0/js/buttons.print.min.js"></script>
+
+    <link rel="stylesheet" href="./index.css">
+</head>
+
+<body class="bg-gray-50 font-sans antialiased flex flex-col min-h-screen">
+
+
+    <!-- Main Content -->
+    <div class="container mx-auto py-10 px-6 flex-grow">
+        <h1 class="text-5xl font-extrabold text-blue-900 text-center mb-12">Результат перевірки</h1>
+
+        <div class="summary bg-gray-100 p-10 rounded-xl shadow-xl mb-10">
+            <div class="flex flex-col sm:flex-row justify-center space-x-4">
+                <a href="/" class="mt-6 px-8 py-4 bg-green-600 text-white font-semibold rounded-lg shadow-lg hover:bg-green-700 transition duration-300 ease-in-out" title="Download Excel with differences">Головна</a>
+                <a href="/export_excel" class="mt-6 px-8 py-4 bg-green-600 text-white font-semibold rounded-lg shadow-lg hover:bg-green-700 transition duration-300 ease-in-out" title="Download Excel with differences">Download Excel</a>
+                <a href="/export_csv" class="mt-6 px-8 py-4 bg-green-600 text-white font-semibold rounded-lg shadow-lg hover:bg-green-700 transition duration-300 ease-in-out" title="Download CSV with differences">Download CSV</a>
+            </div>
+            <p class="text-2xl text-center mt-5">Rows in File 1: <span class="font-bold text-blue-700">{{ summary.file1_row_count }}</span></p>
+            <p class="text-2xl text-center mt-5">Rows in File 2: <span class="font-bold text-blue-700">{{ summary.file2_row_count }}</span></p>
+            <p class="text-2xl text-center mt-5">Загальні суттєві зміни: <span class="font-bold text-red-700">{{ summary.total_changes }}</span></p>
+        </div>
+
+        <!-- Category Filter Dropdown -->
+        <div class="mb-6">
+            <label for="categoryFilter" class="block text-gray-700 font-semibold mb-3">Фільтр по категорії:</label>
+            <select id="categoryFilter" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                <option value="">All Categories</option>
+                <option value="асорті">асорті</option>
+                <option value="свинина">свинина</option>
+                <option value="курятина">курятина</option>
+                <option value="індичатина">індичатина</option>
+                <option value="яловичина">яловичина</option>
+            </select>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="mb-6">
+            <input type="text" id="globalSearch" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition" placeholder="Search..." aria-label="Global Search">
+        </div>
+
+        <div class="overflow-x-auto rounded-lg shadow-lg">
+            <form action="/edit_prices" method="POST">
+                <button type="submit" class="mt-6 px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg shadow-lg hover:bg-blue-700 transition duration-300 ease-in-out">Save Changes</button>
+                <table id="resultsTable" class="min-w-full bg-white rounded-lg shadow-md">
+                    <thead class="bg-gray-100 border-b">
+                        <tr>
+                            <th class="p-4 font-semibold text-gray-600">Group</th>
+                            <th class="p-4 font-semibold text-gray-600">Category</th>
+                            <th class="p-4 font-semibold text-gray-600">Subcategory</th>
+                            <th class="p-4 font-semibold text-gray-600">Name</th>
+                            <th class="p-4 font-semibold text-gray-600">Promo Info</th>
+                            <th class="p-4 font-semibold text-gray-600">Code</th>
+                            <th class="p-4 font-semibold text-gray-600">SKU</th>
+                            <th class="p-4 font-semibold text-gray-600">Image (File 1)</th>
+                            <th class="p-4 font-semibold text-gray-600">Image (File 2)</th>
+                            <th class="p-4 font-semibold text-gray-600">Price (File 1)</th>
+                            <th class="p-4 font-semibold text-gray-600">Price (File 2)</th>
+                            <th class="p-4 font-semibold text-gray-600" data-order="desc"> % Difference</th>
+                            <th class="p-4 font-semibold text-gray-600" data-order="desc">Numeric Difference</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for result in results %}
+                        <tr class="table-row {{ result.highlight }} hover:bg-gray-100 cursor-pointer transition {{ result.significant }}">
+                            <td class="p-4 border-b border-gray-200">{{ result.group }}</td>
+                            <td class="p-4 border-b border-gray-200 category">{{ result.category }}</td>
+                            <td class="p-4 border-b border-gray-200">{{ result.subcategory }}</td>
+                            <td class="p-4 border-b border-gray-200">{{ result.product_group }}</td>
+                            <td class="p-4 border-b border-gray-200">
+                                <input type="text" name="promo_{{ result.id }}" value="{{ result.promo }}" class="border border-gray-300 rounded-lg p-1 w-full" />
+                            </td>
+                            <td class="p-4 border-b border-gray-200">{{ result.cod_point }}</td>
+                            <td class="p-4 border-b border-gray-200">{{ result.cod_sku }}</td>
+                            <td class="p-4 border-b border-gray-200"><a href="{{ result.photo1 }}" target="_blank" class="text-blue-500 hover:underline">View Image</a></td>
+                            <td class="p-4 border-b border-gray-200"><a href="{{ result.photo2 }}" target="_blank" class="text-blue-500 hover:underline">View Image</a></td>
+                            <td class="p-4 border-b border-gray-200">{{ result.price1 }}</td>
+                            <td class="p-4 border-b border-gray-200">
+                                <input type="text" name="price2_{{ result.id }}" value="{{ result.price2 }}" class="border border-gray-300 rounded-lg p-1 w-full" />
+                            </td>
+                            <td class="p-4 border-b border-gray-200 tooltip" title="Difference between prices of file 1 and file 2">
+                                {{ result.percentage_diff or 'N/A' }}%
+                            </td>
+                            <td class="p-4 border-b border-gray-200 tooltip" title="Numeric difference between prices of file 1 and file 2">
+                                {{ result.numeric_diff or 'N/A' }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>                
+                <button type="submit" class="mt-6 px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg shadow-lg hover:bg-blue-700 transition duration-300 ease-in-out">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white shadow-inner text-gray-600 text-center py-6">
+        <div class="max-w-6xl mx-auto px-4">
+            <p class="font-medium">&copy; 2024 Excel Comparator | All Rights Reserved. Муха Богдан</p>
+            <p class="text-sm">Made with ❤️ in Ukraine</p>
+        </div>
+    </footer>
+
+    <script src="./index.js"></script>
+
+    
+
+</body>
+</html>

@@ -1,0 +1,103 @@
+        /* Highlighting rows based on significance */
+        .significant {
+            background-color: #fee2e2; /* Light red */
+        }
+
+        .minor {
+            background-color: #fef3c7; /* Light yellow */
+        }
+
+        /* Sticky table headers */
+        table thead th {
+            position: sticky;
+            top: 0;
+            background-color: #f9fafb;
+            z-index: 1;
+            border-bottom: 2px solid #e5e7eb; /* Border for sticky headers */
+        }
+
+        /* Compact view styling */
+        .compact-row {
+            display: none;
+        }
+
+        /* Spinner styling */
+        .spinner {
+            display: none;
+            border: 4px solid #f3f3f3; /* Light grey */
+            border-top: 4px solid #3498db; /* Blue */
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Tooltip styling */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 120px;
+            background-color: black;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px 0;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%; /* Position above the text */
+            left: 50%;
+            margin-left: -60px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Enhanced table styles */
+        .table-row {
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .table-row:hover {
+            background-color: #f0f9ff; /* Light blue on hover */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+        }
+        
+        .dataTables_wrapper .dataTables_paginate {
+            margin-top: 1rem;
+            justify-content: center;
+            display: flex;
+            gap: 0.5rem;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            background-color: #f3f4f6;
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+            background-color: #e5e7eb;
+            color: #1f2937;
+        }
+        
+        
